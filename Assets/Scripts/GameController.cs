@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -16,10 +17,10 @@ public class GameController : MonoBehaviour
     private int _timerTick;
     private int _seconds;
     private int _minutes;
-    private bool _isCoinSpawned;
     private int _spawnedCoins;
     private int _score;
     private int _coinValue;
+    private bool _isWaitingToSpawn;
 
     private void Start()
     {
@@ -31,13 +32,17 @@ public class GameController : MonoBehaviour
         _score = 0;
         _spawnedCoins = 1;
         _coinValue = 25;
-        _isCoinSpawned = false;
+        _isWaitingToSpawn = false;
     }
 
     // Update is called once per frame
     private void Update()
     {
         Tick();
+        if (!_isWaitingToSpawn)
+        {
+            StartCoroutine(WaitToSpawnCoin());
+        }
     }
 
     private void Tick()
@@ -54,36 +59,35 @@ public class GameController : MonoBehaviour
             _seconds -= 60;
             _minutes++;
         }
+    }
 
-        if (_freeCells.Count > 0 && _seconds * _spawnedCoins % _timerTick == 0 && _seconds > 0 && !_isCoinSpawned)
-        {
-            SpawnCoin();
-            _isCoinSpawned = !_isCoinSpawned;
-            StartCoroutine(WaitForCoin());
-            _spawnedCoins++;
-        }
+    private IEnumerator WaitToSpawnCoin()
+    {
+        _isWaitingToSpawn = true;
+        yield return new WaitForSeconds(_timerTick);
+        SpawnCoin();
+        _spawnedCoins++;
+        _isWaitingToSpawn = false;
     }
 
     private void SpawnCoin()
     {
-        var nodeToSpawn = _freeCells[UnityEngine.Random.Range(0, _freeCells.Count - 1)];
-        _coins.Add(Instantiate(_coin, new Vector3(nodeToSpawn.XCoordinate, nodeToSpawn.YCoordinate, 0), Quaternion.identity));
-        _freeCells.Remove(nodeToSpawn);
+        if (_freeCells.Count > 0)
+        {
+            var nodeToSpawn = _freeCells[UnityEngine.Random.Range(0, _freeCells.Count - 1)];
+            _coins.Add(Instantiate(_coin, new Vector3(nodeToSpawn.XCoordinate, nodeToSpawn.YCoordinate, 0), Quaternion.identity));
+            _freeCells.Remove(nodeToSpawn);
+        }
     }
 
-    private IEnumerator WaitForCoin()
-    {
-        yield return new WaitForSeconds(1f);
-        _isCoinSpawned = !_isCoinSpawned;
-    }
     public void CoinPickup(Vector3 position)
     {
-        foreach (var coin in _coins)
+        foreach (var coin in _coins.ToList())
         {
             if (coin.transform.position == position)
             {
                 _score += _coinValue;
-                _freeCells.Add(new Node((int)position.x, (int)position.y, false, false));
+                _freeCells.Add(new Node((int)Math.Round(position.x), (int)Math.Round(position.y), false, false));
 
                 if (_score >= 10)
                 {

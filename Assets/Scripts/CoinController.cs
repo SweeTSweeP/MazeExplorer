@@ -9,4 +9,12 @@ public class CoinController : MonoBehaviour
             FindObjectOfType<GameController>().CoinPickup(transform.position);
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            FindObjectOfType<GameController>().CoinPickup(transform.position);
+        }
+    }
 }

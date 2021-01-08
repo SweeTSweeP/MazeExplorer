@@ -28,6 +28,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            Debug.Break();
+        }
+    }
+
     private void FixedUpdate()
     {
         _rigidbody.MovePosition(_rigidbody.position + _movement * _speed * Time.fixedDeltaTime);

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Pathfinding;
 
 public class PathGenerator : MonoBehaviour
 {
     [SerializeField] private GridGenerator _gridGenerator;
+    [SerializeField] private AstarPath _astarPath;
 
     private Stack<Node> _visitedNodes;
     private List<Node> _freeCells;
@@ -33,6 +35,9 @@ public class PathGenerator : MonoBehaviour
         _visitedNodes.Push(_currentNode);
 
         BuildPath();
+        GraphsConfiguring();
+
+        _astarPath.Scan();
     }
 
     private void BuildPath()
@@ -173,5 +178,15 @@ public class PathGenerator : MonoBehaviour
         {
             _currentNode = _visitedNodes.Peek();
         }
+    }
+
+    private void GraphsConfiguring()
+    {
+        var nodeSize = 0.25f;
+        var gridSizeMultiplicator = 1 / 0.25f;
+
+        _astarPath.data.gridGraph.SetDimensions((int)(_gridWidth * gridSizeMultiplicator), (int)(_gridHeight * gridSizeMultiplicator), nodeSize);
+        _astarPath.data.gridGraph.center = new Vector3(_gridWidth/2, _gridHeight/2, 0);
+        _astarPath.Scan();
     }
 }

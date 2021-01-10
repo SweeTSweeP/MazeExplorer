@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Maze;
 using TMPro;
 using UnityEngine;
 
@@ -49,8 +50,7 @@ public class GameController : MonoBehaviour
 
         SpawnEnemies(6);
     }
-
-    // Update is called once per frame
+    
     private void Update()
     {
         Tick();
@@ -93,41 +93,36 @@ public class GameController : MonoBehaviour
 
     private void SpawnCoin()
     {
-        if (_freeCells.Count > 0)
-        {
-            var nodeToSpawn = _freeCells[UnityEngine.Random.Range(0, _freeCells.Count - 1)];
-            _coins.Add(Instantiate(_coin, new Vector3(nodeToSpawn.XCoordinate, nodeToSpawn.YCoordinate, 0), Quaternion.identity));
-            _freeCells.Remove(nodeToSpawn);
-        }
+        if (_freeCells.Count <= 0) return;
+        var nodeToSpawn = _freeCells[UnityEngine.Random.Range(0, _freeCells.Count - 1)];
+        _coins.Add(Instantiate(_coin, new Vector3(nodeToSpawn.XCoordinate, nodeToSpawn.YCoordinate, 0), Quaternion.identity));
+        _freeCells.Remove(nodeToSpawn);
     }
 
     public void CoinPickup(Vector3 position)
     {
-        foreach (var coin in _coins.ToList())
+        foreach (var coin in _coins.ToList().Where(coin => coin.transform.position == position))
         {
-            if (coin.transform.position == position)
+            _score += _coinValue;
+            _freeCells.Add(new Node((int)Math.Round(position.x), (int)Math.Round(position.y), false));
+
+            if (_score >= 10)
             {
-                _score += _coinValue;
-                _freeCells.Add(new Node((int)Math.Round(position.x), (int)Math.Round(position.y), false, false));
-
-                if (_score >= 10)
-                {
-                    _scoreText.text = $"00{_score}";
-                }
-
-                if (_score >= 100)
-                {
-                    _scoreText.text = $"0{_score}";
-                }
-
-                if (_score >= 1000)
-                {
-                    _scoreText.text = $"{_score}";
-                }
-
-                Destroy(coin);
-                _coins.Remove(coin);
+                _scoreText.text = $"00{_score}";
             }
+
+            if (_score >= 100)
+            {
+                _scoreText.text = $"0{_score}";
+            }
+
+            if (_score >= 1000)
+            {
+                _scoreText.text = $"{_score}";
+            }
+
+            Destroy(coin);
+            _coins.Remove(coin);
         }
     }
 
@@ -137,7 +132,7 @@ public class GameController : MonoBehaviour
 
         var spotsToSpawn = _spawnSpots.ToList();
 
-        for (int i = 0; i < enemiesCount; i++)
+        for (var i = 0; i < enemiesCount; i++)
         {
             if (spotsToSpawn.Count == 0)
             {

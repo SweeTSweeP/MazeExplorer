@@ -1,76 +1,56 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using Cinemachine;
 
-public class GridGenerator : MonoBehaviour
+namespace Maze
 {
-    [SerializeField] private int _gridWidth;
-    [SerializeField] private int _gridHeight;
-    [SerializeField] private GameObject _wall;
-    [SerializeField] private GameObject _node;
-    [SerializeField] private GameObject _player;
-    [SerializeField] private Transform _parent;
-
-    private List<Node> _freeCells;
-
-    public List<Node> FreeCells
+    public class GridGenerator : MonoBehaviour
     {
-        get
-        {
-            return _freeCells;
-        }
-    }
+        [SerializeField] private int _gridWidth;
+        [SerializeField] private int _gridHeight;
+        [SerializeField] private GameObject _wall;
+        [SerializeField] private GameObject _node;
+        [SerializeField] private GameObject _player;
+        [SerializeField] private Transform _parent;
 
-    public int GridWidth
-    {
-        get
-        {
-            return _gridWidth;
-        }
-    }
+        private List<Node> _freeCells;
+        public List<Node> FreeCells => _freeCells;
+        public int GridWidth => _gridWidth;
+        public int GridHeight => _gridHeight;
 
-    public int GridHeight
-    {
-        get
+        public void BuildGrid()
         {
-            return _gridHeight;
-        }
-    }
-
-    public void BuildGrid()
-    {
-        if (_gridWidth % 2 == 0)
-        {
-            _gridWidth++;
-        }
-
-        if (_gridHeight % 2 == 0)
-        {
-            _gridHeight++;
-        }
-
-        _freeCells = new List<Node>();
-
-        for (int i = 0; i < _gridWidth; i++)
-        {
-            for (int j = 0; j < _gridHeight; j++)
+            if (_gridWidth % 2 == 0)
             {
-                Instantiate(_node, new Vector3(i, j, 1), Quaternion.identity);
+                _gridWidth++;
+            }
 
-                if ((i == _gridWidth - 1 || j == _gridHeight - 1) || (i == 0 && j != 0) || (i != 0 && j == 0) || (i == 0 && j == 0))
+            if (_gridHeight % 2 == 0)
+            {
+                _gridHeight++;
+            }
+
+            _freeCells = new List<Node>();
+
+            for (var i = 0; i < _gridWidth; i++)
+            {
+                for (var j = 0; j < _gridHeight; j++)
                 {
-                    Instantiate(_wall, new Vector3(i, j, 0), Quaternion.identity);
-                }
-                else
-                {
-                    if (i % 2 == 0 || j % 2 == 0)
+                    Instantiate(_node, new Vector3(i, j, 1), Quaternion.identity);
+
+                    if ((i == _gridWidth - 1 || j == _gridHeight - 1) || (i == 0 && j != 0) || (i != 0 && j == 0) || (i == 0 && j == 0))
                     {
                         Instantiate(_wall, new Vector3(i, j, 0), Quaternion.identity);
                     }
                     else
                     {
-                        _freeCells.Add(new Node(i, j, false, false));
+                        if (i % 2 == 0 || j % 2 == 0)
+                        {
+                            Instantiate(_wall, new Vector3(i, j, 0), Quaternion.identity);
+                        }
+                        else
+                        {
+                            _freeCells.Add(new Node(i, j, false));
+                        }
                     }
                 }
             }

@@ -1,63 +1,18 @@
-﻿public class Node
+﻿namespace Maze
 {
-    private int _xCoordinate;
-    private int _yCoordinate;
-    private bool _isVisited;
-    private bool _isNoWayOut;
-
-    public int XCoordinate
+    public class Node
     {
-        get
-        {
-            return _xCoordinate;
-        }
-        set
-        {
-            _xCoordinate = value;
-        }
-    }
+        public int XCoordinate { get; private set; }
 
-    public int YCoordinate
-    {
-        get
-        {
-            return _yCoordinate;
-        }
-        set
-        {
-            _yCoordinate = value;
-        }
-    }
+        public int YCoordinate { get; private set; }
 
-    public bool IsVisited
-    {
-        get
-        {
-            return _isVisited;
-        }
-        set
-        {
-            _isVisited = value;
-        }
-    }
+        public bool IsVisited { get; set; }
 
-    public bool IsNoWayOut
-    {
-        get
+        public Node(int x, int y, bool isVisited)
         {
-            return _isNoWayOut;
+            XCoordinate = x;
+            YCoordinate = y;
+            IsVisited = isVisited;
         }
-        set
-        {
-            _isNoWayOut = value;
-        }
-    }
-
-    public Node(int x, int y, bool isVisited, bool isNoWayOut)
-    {
-        _xCoordinate = x;
-        _yCoordinate = y;
-        _isVisited = isVisited;
-        _isNoWayOut = isNoWayOut;
     }
 }

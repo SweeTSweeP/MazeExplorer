@@ -1,7 +1,10 @@
-﻿public enum PathDirection
+﻿namespace Maze
 {
-    North,
-    East,
-    South,
-    West
+    public enum PathDirection
+    {
+        North,
+        East,
+        South,
+        West
+    }
 }
